@@ -4,9 +4,9 @@ services:
   db:
     image: "postgres:alpine"
     environment:
-      - POSTGRES_USER={{project_name}}
+      - POSTGRES_USER=recipe_app
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB={{project_name}}
+      - POSTGRES_DB=recipe_app
     ports:
       - "5432"
     volumes:
@@ -66,5 +66,5 @@ services:
 
 volumes:
   dbdata:
-    name: {{project_name}}_dbdata
+    name: recipe_app_dbdata
     external: true

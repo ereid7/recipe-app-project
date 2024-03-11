@@ -16,7 +16,7 @@ backend_format:
 
 # Commands for Docker version
 docker_setup:
-	docker volume create {{project_name}}_dbdata
+	docker volume create recipe_app_dbdata
 	docker-compose build --no-cache backend
 	docker-compose run frontend npm install
 

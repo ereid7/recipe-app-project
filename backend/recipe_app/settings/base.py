@@ -21,9 +21,21 @@ AUTH_USER_MODEL = "users.User"
 
 ALLOWED_HOSTS = []
 
+# DATABASES = {
+#     "default": config("DATABASE_URL", cast=db_url),
+# }
+
 DATABASES = {
-    "default": config("DATABASE_URL", cast=db_url),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'recipe_app',
+        'USER': 'recipe_app',
+        'PASSWORD': 'password',
+        'HOST': 'db',
+        'PORT': '5432',
+    }
 }
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -56,7 +68,7 @@ MIDDLEWARE = [
     "defender.middleware.FailedLoginMiddleware",
 ]
 
-ROOT_URLCONF = "{{project_name}}.urls"
+ROOT_URLCONF = "recipe_app.urls"
 
 TEMPLATES = [
     {
@@ -84,7 +96,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "{{project_name}}.wsgi.application"
+WSGI_APPLICATION = "recipe_app.wsgi.application"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
