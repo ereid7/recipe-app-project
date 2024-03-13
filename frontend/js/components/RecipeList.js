@@ -38,7 +38,7 @@ const RecipeList = () => {
                   <tr key={recipe.id}>
                     <td><Link to={`/recipe/${recipe.id}`}>{recipe?.title}</Link></td>
                     <td>{recipe?.description}</td>
-                    <td>{recipe.ingredients?.length}</td>
+                    <td>{recipe.ingredients_count}</td>
                     {/* <td>{recipe.restaurants.length}</td> */}
                   </tr>
                 ))}
@@ -48,9 +48,6 @@ const RecipeList = () => {
             <p>No recipes found.</p>
           )}
           <div className="mt-4 d-flex justify-content-between">
-            <Link to="/new-recipe">
-              <Button variant="primary">Add New Recipe</Button>
-            </Link>
             <Link to="/scrape-recipe">
               <Button variant="success">Scrape Recipe</Button>
             </Link>

@@ -32,23 +32,28 @@ class ScrapeRecipeView(APIView):
             script_tags = soup.find_all('script', type='application/ld+json')
             for script_tag in script_tags:
                 try:
-                    schema_data = json.loads(script_tag.string)
+                    schema_data = json.loads(script_tag.string) if script_tag.string else None
+
                     if isinstance(schema_data, list):
                         for item in schema_data:
                             if "@type" in item and "Recipe" in item["@type"]:
                                 # Valid recipe schema found, return recipe information
+                                instructions = " ".join(step["text"] for step in item.get("recipeInstructions", []))
                                 recipe_info = {
                                     "title": item.get("name", ""),
                                     "description": item.get("description", ""),
                                     "ingredients": item.get("recipeIngredient", []),
+                                    "instructions": instructions,
                                 }
                                 return Response({'message': 'Valid recipe schema found', 'recipe': recipe_info}, status=status.HTTP_200_OK)
-                    elif "@type" in schema_data and "Recipe" in schema_data["@type"]:
+                    elif schema_data and "@type" in schema_data and "Recipe" in schema_data["@type"]:
                         # Valid recipe schema found, return recipe information
+                        instructions = " ".join(step["text"] for step in schema_data.get("recipeInstructions", []))
                         recipe_info = {
                             "title": schema_data.get("name", ""),
                             "description": schema_data.get("description", ""),
                             "ingredients": schema_data.get("recipeIngredient", []),
+                            "instructions": instructions,
                         }
                         return Response({'message': 'Valid recipe schema found', 'recipe': recipe_info}, status=status.HTTP_200_OK)
                 except json.JSONDecodeError:

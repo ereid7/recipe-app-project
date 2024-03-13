@@ -10,9 +10,9 @@ class Command(BaseCommand):
         restaurant2 = Restaurant.objects.create(name='Restaurant 2', location='Location 2')
 
         # Create mock recipes
-        recipe1 = Recipe.objects.create(title='Recipe 1', description='Description 1', instructions='Instructions 1')
-        recipe2 = Recipe.objects.create(title='Recipe 2', description='Description 2', instructions='Instructions 2')
-        recipe3 = Recipe.objects.create(title='Recipe 3', description='Description 3', instructions='Instructions 3')
+        recipe1 = Recipe.objects.create(title='Recipe 1', description='Description 1', instructions='Instructions 1', url='https://example.com/recipe1')
+        recipe2 = Recipe.objects.create(title='Recipe 2', description='Description 2', instructions='Instructions 2', url='https://example.com/recipe2')
+        recipe3 = Recipe.objects.create(title='Recipe 3', description='Description 3', instructions='Instructions 3', url='https://example.com/recipe3')
 
         # Create mock ingredients
         ingredient1 = Ingredient.objects.create(name='Ingredient 1', quantity='1 cup')
@@ -31,6 +31,6 @@ class Command(BaseCommand):
         RestaurantRecipe.objects.create(restaurant=restaurant1, recipe=recipe1)
         RestaurantRecipe.objects.create(restaurant=restaurant1, recipe=recipe2)
         RestaurantRecipe.objects.create(restaurant=restaurant2, recipe=recipe3)
-        RestaurantRecipe.objects.create(restaurant=restaurant2, recipe=recipe1)  # Recipe 1 belongs to both restaurants
+        RestaurantRecipe.objects.create(restaurant=restaurant2, recipe=recipe1)
 
         self.stdout.write(self.style.SUCCESS('Successfully seeded the database with mock data'))

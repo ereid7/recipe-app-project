@@ -4,7 +4,7 @@ class Restaurant(models.Model):
     """
     Represents a restaurant.
     """
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     location = models.CharField(max_length=255)
 
     def __str__(self):
@@ -17,6 +17,7 @@ class Recipe(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     instructions = models.TextField()
+    url = models.URLField(unique=True)
 
     def __str__(self):
         return self.title

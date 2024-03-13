@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Button, Form, Container, Row, Col, Alert } from "react-bootstrap";
-import MultiSelect from "./MultiSelect";
+import Select from 'react-select';
 
 const ScrapeRecipe = () => {
   const [restaurants, setRestaurants] = useState([]);
@@ -11,7 +11,6 @@ const ScrapeRecipe = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch restaurants
     const fetchRestaurants = async () => {
       try {
         const response = await axios.get("/api/restaurants/");
@@ -28,23 +27,21 @@ const ScrapeRecipe = () => {
     fetchRestaurants();
   }, []);
 
-  const handleRestaurantChange = (event) => {
-    setSelectedRestaurants(
-      [...event.target.selectedOptions].map((option) => option.value),
-    );
-  };
+  const handleRestaurantChange = useCallback((selectedOptions) => {
+    setSelectedRestaurants(selectedOptions.map(option => option.value));
+  }, []);
 
-  const handleUrlChange = (event) => {
+  const handleUrlChange = useCallback((event) => {
     setUrl(event.target.value);
-  };
+  }, []);
 
-  const validateRecipeSchema = async () => {
+  const validateRecipeSchema = useCallback(async () => {
     try {
-        const response = await axios.get("/api/scrape-recipe/", {
-            params: {
-              url: url,
-            },
-        });
+      const response = await axios.get("/api/scrape-recipe/", {
+        params: {
+          url: url,
+        },
+      });
       setRecipe(response.data.recipe);
       setError(null);
     } catch (error) {
@@ -52,24 +49,37 @@ const ScrapeRecipe = () => {
       setRecipe(null);
       console.error("Error validating recipe schema:", error);
     }
-  };
+  }, [url]);
 
-  const addRecipe = async () => {
+  const addRecipe = useCallback(async () => {
     try {
-      await axios.post("/api/recipes/", {
-        ...recipe,
+      const postData = {
+        title: recipe.title,
+        description: recipe.description,
+        instructions: recipe.instructions,
+        url: url,
+        ingredients: recipe.ingredients,
         restaurants: selectedRestaurants,
-      });
+      };
+  
+      await axios.post("/api/recipes/", postData);
       setUrl("");
       setRecipe(null);
       setSelectedRestaurants([]);
       setError(null);
       alert("Recipe added successfully!");
     } catch (error) {
-      setError("Error adding recipe.");
+      if (error.response && error.response.status === 409) {
+        setError("A recipe with this URL already exists.");
+      } else {
+        setError("Error adding recipe.");
+      }
       console.error("Error adding recipe:", error);
     }
-  };
+  }, [recipe, url, selectedRestaurants]);
+
+  // Disable the Add Recipe button if no valid recipe was scraped or no restaurants are selected
+  const isAddRecipeDisabled = !recipe || selectedRestaurants.length === 0;
 
   return (
     <Container>
@@ -79,10 +89,14 @@ const ScrapeRecipe = () => {
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Select Restaurants</Form.Label>
-              <MultiSelect
+              <Select
+                isMulti
+                name="restaurants"
                 options={restaurants}
-                selectedOptions={selectedRestaurants}
+                className="basic-multi-select"
+                classNamePrefix="select"
                 onChange={handleRestaurantChange}
+                value={restaurants.filter(restaurant => selectedRestaurants.includes(restaurant.value))}
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -100,24 +114,17 @@ const ScrapeRecipe = () => {
             {recipe && (
               <div className="mt-3">
                 <h3>Recipe Details</h3>
-                <p>
-                  <strong>Title:</strong> {recipe.title}
-                </p>
-                <p>
-                  <strong>Description:</strong> {recipe.description}
-                </p>
-                <p>
-                  <strong>Ingredients:</strong> {recipe.ingredients.join(", ")}
-                </p>
-                <Button variant="success" onClick={addRecipe}>
+                <p><strong>Title:</strong> {recipe.title}</p>
+                <p><strong>Description:</strong> {recipe.description}</p>
+                <p><strong>Ingredients:</strong> {recipe.ingredients.join(", ")}</p>
+                <p><strong>Instructions:</strong> {recipe.instructions}</p>
+                <Button variant="success" onClick={addRecipe} disabled={isAddRecipeDisabled}>
                   Add Recipe
                 </Button>
               </div>
             )}
             {error && (
-              <Alert variant="danger" className="mt-3">
-                {error}
-              </Alert>
+              <Alert variant="danger" className="mt-3">{error}</Alert>
             )}
           </Form>
         </Col>
