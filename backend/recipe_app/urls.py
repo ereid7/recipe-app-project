@@ -5,6 +5,7 @@ import django_js_reverse.views
 from common.routes import routes as common_routes
 from rest_framework.routers import DefaultRouter
 
+from recipe_app.views import RecipeView, RecipeListView, ScrapeRecipeView, RestaurantListView
 
 router = DefaultRouter()
 
@@ -18,4 +19,8 @@ urlpatterns = [
     path("admin/defender/", include("defender.urls")),
     path("jsreverse/", django_js_reverse.views.urls_js, name="js_reverse"),
     path("api/", include(router.urls), name="api"),
+    path("api/recipes/<int:pk>/", RecipeView.as_view(), name="recipe_detail"),
+    path("api/recipes/", RecipeListView.as_view(), name="recipe_list"),
+    path("api/scrape-recipe/", ScrapeRecipeView.as_view(), name="scrape_recipe"),
+    path('api/restaurants/', RestaurantListView.as_view(), name='restaurant_list'),
 ]

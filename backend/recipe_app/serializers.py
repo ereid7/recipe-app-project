@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Recipe, Ingredient, RecipeIngredient
+from .models import Recipe, Ingredient, RecipeIngredient, Restaurant
 
 class IngredientSerializer(serializers.ModelSerializer):
     """
@@ -28,3 +28,12 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ['title', 'description', 'instructions', 'ingredients']
+
+class RestaurantSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Restaurant model.
+    """
+
+    class Meta:
+        model = Restaurant
+        fields = '__all__'

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "defender",
     "common",
     "users",
+    'recipe_app'
 ]
 
 MIDDLEWARE = [
